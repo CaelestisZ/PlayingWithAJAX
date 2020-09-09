@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Periodic Refresh</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+
+    <script>
+
+        var obj = {
+            xhr: new XMLHttpRequest(),
+
+            // Send request to get JSON from index.php
+
+            getJSON : function() {
+                dept = document.getElementById("dept");
+                this.xhr.onreadystatechange = this.updateMatrix;
+                this.xhr.timeout = 5000;
+                this.xhr.ontimeout = this.backOff;
+                this.xhr.open("GET", "index.php", true);
+                this.xhr.send()
+            },
+
+            // Update matrix upon successful JSON retrieval
+
+            updateMatrix: function() {
+                if(this.readyState == 4 && this.status == 200) {
+                    response = this.responseText;
+                    var parsedJSON = JSON.parse(response);
+                    var cse = document.getElementById("cse-count");
+                    var ece = document.getElementById("ece-count");
+                    var me = document.getElementById("me-count");
+                    var bt = document.getElementById("bt-count");
+                    cse.innerHTML = parsedJSON.CSE;
+                    ece.innerHTML = parsedJSON.ECE;
+                    me.innerHTML = parsedJSON.ME;
+                    bt.innerHTML = parsedJSON.BT;
+                    setTimeout(this.getJSON, 5000);
+                }
+            }
+        }
+
+
+    </script>
+
+</head>
+
+<body onload="obj.getJSON()">
+
+    <section class="section">
+
+        <div class="container">
+
+            <h1 class="title has-text-centered">
+                PESSAT seat allocation matrix
+            </h1>
+
+            <table class="table is-bordered" style="margin: 0 auto;">
+                
+                <thead>
+                    <tr>
+                        <th>CSE</th>
+                        <th>ECE</th>
+                        <th>ME</th>
+                        <th>BT</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td id="cse-count"></td>
+                        <td id="ece-count"></td>
+                        <td id="me-count"></td>
+                        <td id="bt-count"></td>
+                    </tr>
+                </tbody>
+
+            </table>
+
+            <div class="control has-text-centered py-4">
+
+                <div class="select is-rounded px-2">
+                    <select>
+                        <option>CSE</option>
+                        <option>ECE</option>
+                        <option>ME</option>
+                        <option>BT</option>
+                    </select>
+                </div>
+
+                <button class="button is-rounded is-outlined"><strong>Submit</strong></button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+</body>
+
+</html>
