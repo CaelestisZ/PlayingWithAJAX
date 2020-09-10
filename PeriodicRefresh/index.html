@@ -9,36 +9,53 @@
 
     <script>
 
+        jsonarr = {};
+
         var obj = {
             xhr: new XMLHttpRequest(),
 
             // Send request to get JSON from index.php
-
             getJSON : function() {
-                dept = document.getElementById("dept");
                 this.xhr.onreadystatechange = this.updateMatrix;
-                this.xhr.timeout = 5000;
-                this.xhr.ontimeout = this.backOff;
-                this.xhr.open("GET", "index.php", true);
-                this.xhr.send()
+                this.xhr.open("GET", "index.php?jsonarr="+JSON.stringify(jsonarr), true);
+                this.xhr.send();
             },
 
             // Update matrix upon successful JSON retrieval
-
             updateMatrix: function() {
                 if(this.readyState == 4 && this.status == 200) {
                     response = this.responseText;
-                    var parsedJSON = JSON.parse(response);
-                    var cse = document.getElementById("cse-count");
-                    var ece = document.getElementById("ece-count");
-                    var me = document.getElementById("me-count");
-                    var bt = document.getElementById("bt-count");
+                    parsedJSON = JSON.parse(response);
+                    cse = document.getElementById("cse-count");
+                    ece = document.getElementById("ece-count");
+                    me = document.getElementById("me-count");
+                    bt = document.getElementById("bt-count");
                     cse.innerHTML = parsedJSON.CSE;
                     ece.innerHTML = parsedJSON.ECE;
                     me.innerHTML = parsedJSON.ME;
                     bt.innerHTML = parsedJSON.BT;
-                    setTimeout(this.getJSON, 5000);
                 }
+            },
+
+            decrementSeatCount: function() {
+                var dropdownSelection = document.getElementById("dropdown");
+
+                if (dropdownSelection.value == 'CSE') {
+                    cse.innerHTML--;
+                }
+                else if(dropdownSelection.value == 'ECE') {
+                    ece.innerHTML--;
+                }
+                else if(dropdownSelection.value == 'ME') {
+                    me.innerHTML--;
+                }
+                else if(dropdownSelection.value == 'BT') {
+                    bt.innerHTML--;
+                }
+
+                jsonarr = {'CSE': cse.innerHTML, 'ECE': ece.innerHTML, 'ME': me.innerHTML, 'BT': bt.innerHTML};
+                this.getJSON();
+
             }
         }
 
@@ -54,7 +71,7 @@
         <div class="container">
 
             <h1 class="title has-text-centered">
-                PESSAT seat allocation matrix
+                Seat allocation matrix
             </h1>
 
             <table class="table is-bordered" style="margin: 0 auto;">
@@ -82,7 +99,7 @@
             <div class="control has-text-centered py-4">
 
                 <div class="select is-rounded px-2">
-                    <select>
+                    <select id="dropdown">
                         <option>CSE</option>
                         <option>ECE</option>
                         <option>ME</option>
@@ -90,7 +107,7 @@
                     </select>
                 </div>
 
-                <button class="button is-rounded is-outlined"><strong>Submit</strong></button>
+                <a class="button is-rounded is-outlined" onclick="obj.decrementSeatCount()"><strong>Submit</strong></a>
 
             </div>
 
