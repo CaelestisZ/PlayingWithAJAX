@@ -10,6 +10,7 @@
     <script>
 
         jsonarr = {};
+        n = 2;
 
         var obj = {
             xhr: new XMLHttpRequest(),
@@ -17,6 +18,8 @@
             // Send request to get JSON from index.php
             getJSON : function() {
                 this.xhr.onreadystatechange = this.updateMatrix;
+                this.xhr.timeout = 5000;
+                this.xhr.ontimeout = this.backoff;
                 this.xhr.open("GET", "index.php?jsonarr="+JSON.stringify(jsonarr), true);
                 this.xhr.send();
             },
@@ -34,12 +37,13 @@
                     ece.innerHTML = parsedJSON.ECE;
                     me.innerHTML = parsedJSON.ME;
                     bt.innerHTML = parsedJSON.BT;
+                    setTimeout(this.getJSON, 5000);
                 }
             },
 
+            // Decrement department seat count triggered upon 'submit' click
             decrementSeatCount: function() {
                 var dropdownSelection = document.getElementById("dropdown");
-
                 if (dropdownSelection.value == 'CSE') {
                     cse.innerHTML--;
                 }
@@ -52,10 +56,16 @@
                 else if(dropdownSelection.value == 'BT') {
                     bt.innerHTML--;
                 }
-
                 jsonarr = {'CSE': cse.innerHTML, 'ECE': ece.innerHTML, 'ME': me.innerHTML, 'BT': bt.innerHTML};
                 this.getJSON();
+            },
 
+            // Throttle request timeout
+            backoff: function() {
+                console.log("Looks like we have failed!!!");
+                setTimeout(this.getJSON, 2*n*1000);
+                n=n*2;
+                console.log("The value of n is"+ n);
             }
         }
 
