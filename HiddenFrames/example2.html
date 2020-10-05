@@ -1,0 +1,18 @@
+<html>
+
+<head>
+    <title>Yet another hidden frames example</title>
+    <script type="text/javascript" src="example2.js"/>
+</head>
+
+<body>
+    <label>Department:<input type="text" id="dept" placeholder="Your Dept Here" onblur="obj.getElectives()" /></label>
+    <p>
+        <label>Electives:&nbsp;
+            <select id="el" style="width:100px">
+            </select>
+            <iframe id="ifr" width="200" height="100" style="display:none" />
+        </label>
+</body>
+
+</html>
